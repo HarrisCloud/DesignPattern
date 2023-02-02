@@ -9,6 +9,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using DesignPattern.Example.Singleton;
 using DesignPattern.Example.Strategy;
+using DesignPattern.Example.ObserverPattern;
 
 internal class Program
 {
@@ -19,8 +20,33 @@ internal class Program
         // RunRepoPattern(args);
         // RunFactoryPattern(args);
         // RunSingletonPattern();
-        RunStrategyPattern();
+        // RunStrategyPattern();
+        RunObserverPattern();
         Console.WriteLine("Completed program");
+    }
+
+    // Observer Pattern
+    private static void RunObserverPattern()
+    {
+        var apple = new Apple(10.1m);
+        var tesla = new Tesla(22.2m);
+        var investor1 = new Investor("Joe"); 
+        var investor2 = new Investor("Bill");
+        var investor3 = new Investor("Elon");
+        apple.Attach(investor1);
+        apple.Attach(investor2);
+        tesla.Attach(investor3);
+
+        apple.Price = 10.5m;
+        apple.Price = 11.2m;
+        tesla.Price = 23.3m;
+
+        Console.ReadKey();
+
+        apple.Detach(investor1);
+        apple.Price = 11.5m;
+
+        Console.ReadKey();
     }
 
 
