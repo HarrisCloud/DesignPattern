@@ -1,7 +1,7 @@
-﻿using DesignPattern.Example.FactoryExample;
-using DesignPattern.Example.RepositoryPatternExample.Repository;
-using DesignPattern.Example.RepositoryPatternExample.Service;
-using DesignPattern.Example.RepositoryPatternExample.Domain.Interface;
+﻿using DesignPattern.Example.Factory;
+using DesignPattern.Example.RepositoryPattern.Repository;
+using DesignPattern.Example.RepositoryPattern.Service;
+using DesignPattern.Example.RepositoryPattern.Domain.Interface;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -9,7 +9,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using DesignPattern.Example.Singleton;
 using DesignPattern.Example.Strategy;
-using DesignPattern.Example.ObserverPattern;
+using DesignPattern.Example.Observer;
+using DesignPattern.Example.Facade;
 
 internal class Program
 {
@@ -21,8 +22,47 @@ internal class Program
         // RunFactoryPattern(args);
         // RunSingletonPattern();
         // RunStrategyPattern();
-        RunObserverPattern();
+        // RunObserverPattern();
+        RunFacadePattern();
         Console.WriteLine("Completed program");
+    }
+
+    // Facade Pattern
+    private static void RunFacadePattern()
+    {
+        using IHost host = Host.CreateDefaultBuilder()
+            .ConfigureServices((_, services) => services
+                .AddScoped<IBank, Bank>()
+                .AddScoped<ICredit, Credit>()
+                .AddScoped<ILoan, Loan>()
+                .AddScoped<IMortgage, Mortgage>())
+            .Build();
+
+        using IServiceScope serviceScope = host.Services.CreateScope();
+        IServiceProvider provider = serviceScope.ServiceProvider;
+
+        var mortgage = provider.GetRequiredService<IMortgage>();
+        var customer1 = new Customer("Bob", true);
+        var customer2 = new Customer("Fred", false);
+
+        if (mortgage.IsEligible(customer1, 100000))
+        {
+            Console.WriteLine($"{customer1.Name} is eligible");
+        }
+        else
+        {
+            Console.WriteLine($"{customer1.Name} is not eligible");
+        }
+
+        if (mortgage.IsEligible(customer2, 100000))
+        {
+            Console.WriteLine($"{customer2.Name} is eligible");
+        }
+        else
+        {
+            Console.WriteLine($"{customer2.Name} is not eligible");
+        }
+
     }
 
     // Observer Pattern
