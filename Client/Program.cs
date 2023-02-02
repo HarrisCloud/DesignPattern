@@ -7,6 +7,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
+using DesignPattern.Example.Singleton;
+using DesignPattern.Example.Strategy;
 
 internal class Program
 {
@@ -14,7 +16,51 @@ internal class Program
     private static void Main(string[] args)
     {
         Console.WriteLine("Running program");
-        IConfigurationRoot configuration = new ConfigurationBuilder()
+        // RunRepoPattern(args);
+        // RunFactoryPattern(args);
+        // RunSingletonPattern();
+        RunStrategyPattern();
+        Console.WriteLine("Completed program");
+    }
+
+
+    // Strategy Pattern
+    private static void RunStrategyPattern()
+    {
+        var animals = new List<string>
+        {
+            "Cat", "Dog", "Girraffe", "Tiger", "Fish", "Hippo"
+        };
+        Console.WriteLine("QuickSort");
+        var sorter = new SortedList(new QuickSort());
+        var sortedList = sorter.Sort(animals);
+        foreach (var animal in sortedList)
+        {
+            Console.WriteLine(animal.ToString());
+        }
+
+        Console.WriteLine("\nReveseSort");
+        sorter = new SortedList(new ReveseSort());
+        sortedList = sorter.Sort(animals);
+        foreach (var animal in sortedList)
+        {
+            Console.WriteLine(animal.ToString());
+        }
+    }
+
+    // Singleton Pattern
+    private static void RunSingletonPattern()
+    {
+        var logger1 = Logger.GetLogger("Starter1");
+        var logger2 = Logger.GetLogger("Starter2");
+        logger1.WriteMessage("Test1");
+        logger2.WriteMessage("Test2");
+    }
+
+    // Repository Pattern
+    private static void RunRepoPattern(string[] args)
+    {
+       IConfigurationRoot configuration = new ConfigurationBuilder()
                      // .SetBasePath(Path.Combine(Directory.GetCurrentDirectory()))
                      .AddJsonFile("appsettings.json", optional: false)
                      .Build();
@@ -37,23 +83,21 @@ internal class Program
         // var uow = provider.GetRequiredService<IUnitOfWork>();
         var repoPatternSvc = provider.GetRequiredService<IRepoPatternSvc>();
         repoPatternSvc.RunExample();
-
-        Console.WriteLine("Completed program");
     }
 
     // Factory Pattern
-    //private static void Main(string[] args)
-    //{
-    //    IVehicle vehicle = new CarFactory().CreateVehicle();
-    //    Console.WriteLine($"Mileage={vehicle.GetMileage()}");
-    //    Console.WriteLine($"FuelQty={vehicle.GetFuelQty()}");
-    //    vehicle.StartVehicle();
+    private static void RunFactoryPattern(string[] args)
+    {
+        IVehicle vehicle = new CarFactory().CreateVehicle();
+        Console.WriteLine($"Mileage={vehicle.GetMileage()}");
+        Console.WriteLine($"FuelQty={vehicle.GetFuelQty()}");
+        vehicle.StartVehicle();
 
-    //    vehicle = new BoatFactory().CreateVehicle();
-    //    Console.WriteLine($"Mileage={vehicle.GetMileage()}");
-    //    Console.WriteLine($"FuelQty={vehicle.GetFuelQty()}");
-    //    vehicle.StartVehicle();
-    //}
+        vehicle = new BoatFactory().CreateVehicle();
+        Console.WriteLine($"Mileage={vehicle.GetMileage()}");
+        Console.WriteLine($"FuelQty={vehicle.GetFuelQty()}");
+        vehicle.StartVehicle();
+    }
 
 
 
