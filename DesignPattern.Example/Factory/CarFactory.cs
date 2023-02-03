@@ -2,10 +2,13 @@
 {
     public class CarFactory : VehicleFactory
     {
+        public CarFactory(IServiceProvider serviceProvider) : base(serviceProvider)
+        {
+        }
+
         protected override IVehicle MakeVehicle()
         {
-            IVehicle vehicle = new Car();
-            return vehicle;
+            return (IVehicle)serviceProvider.GetService(typeof(Car));
         }
     }
 }

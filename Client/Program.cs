@@ -19,11 +19,11 @@ internal class Program
     {
         Console.WriteLine("Running program");
         // RunRepoPattern(args);
-        // RunFactoryPattern(args);
+        // RunFactoryPattern();
         // RunSingletonPattern();
         // RunStrategyPattern();
         // RunObserverPattern();
-        RunFacadePattern();
+        // RunFacadePattern();
         Console.WriteLine("Completed program");
     }
 
@@ -152,14 +152,30 @@ internal class Program
     }
 
     // Factory Pattern
-    private static void RunFactoryPattern(string[] args)
+    private static void RunFactoryPattern()
     {
-        IVehicle vehicle = new CarFactory().CreateVehicle();
+        using IHost host = Host.CreateDefaultBuilder()
+           .ConfigureServices((_, services) => services
+               .AddScoped<CarFactory>()
+               .AddScoped<BoatFactory>()
+               .AddScoped<Car>()
+               .AddScoped<IVehicle, Car>(s => s.GetService<Car>())
+               .AddScoped<Boat>()
+               .AddScoped<IVehicle, Boat>(s => s.GetService<Boat>())
+               )
+           .Build();
+
+        using IServiceScope serviceScope = host.Services.CreateScope();
+        IServiceProvider provider = serviceScope.ServiceProvider;
+        var carFactory = provider.GetRequiredService<CarFactory>();
+        var boatFactory = provider.GetRequiredService<BoatFactory>();
+
+        var vehicle = carFactory.CreateVehicle();
         Console.WriteLine($"Mileage={vehicle.GetMileage()}");
         Console.WriteLine($"FuelQty={vehicle.GetFuelQty()}");
         vehicle.StartVehicle();
 
-        vehicle = new BoatFactory().CreateVehicle();
+        vehicle = boatFactory.CreateVehicle();
         Console.WriteLine($"Mileage={vehicle.GetMileage()}");
         Console.WriteLine($"FuelQty={vehicle.GetFuelQty()}");
         vehicle.StartVehicle();

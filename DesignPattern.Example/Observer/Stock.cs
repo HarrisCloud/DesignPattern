@@ -1,6 +1,6 @@
 ﻿namespace DesignPattern.Example.Observer
 {
-    public abstract class Stock
+    public abstract class Stock : IObserveStock
     {
         public Stock(string name, decimal price)
         {

@@ -8,7 +8,7 @@ namespace DesignPattern.Test.FacadeTests
         private readonly IBank _bank = Substitute.For<IBank>();
         private readonly ICredit _credit = Substitute.For<ICredit>();
         private readonly ILoan _loan = Substitute.For<ILoan>();
-
+        
         [Fact]
         public void IsEligible_Success()
         {
@@ -26,6 +26,28 @@ namespace DesignPattern.Test.FacadeTests
             var result = sut.IsEligible(new Customer("Bob", true), 1000);
             Assert.True(result);
         }
+
+
+        [Theory]
+        [InlineData("Bob")]
+        [InlineData("Jim")]
+        public void IsEligible_NameSuccess(string name)
+        {
+            _bank.HasFunds(Arg.Any<Customer>(), Arg.Any<decimal>())
+                .Returns(true);
+
+            _credit.HasCredit(Arg.Any<Customer>())
+                .Returns(true);
+
+            _loan.HasNoBadLoans(Arg.Any<Customer>())
+                .Returns(true);
+
+            var sut = new Mortgage(_bank, _credit, _loan);
+
+            var result = sut.IsEligible(new Customer(name, true), 1000);
+            Assert.True(result);
+        }
+
 
         [Fact]
         public void IsEligible_Ineligible()
